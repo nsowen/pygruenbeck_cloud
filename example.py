@@ -27,8 +27,8 @@ class TestGruenbeck:
         """Demo function for testing."""
         try:
             async with PyGruenbeckCloud(
-                username="<USERNAME>",
-                password="<PASSWORD>",
+                username="nils@sowen.de",
+                password="3tT8*WpHqAhXGuY-",
             ) as gruenbeck:
                 gruenbeck.logger = _LOGGER
 
@@ -87,27 +87,43 @@ class TestGruenbeck:
                     await gruenbeck.disconnect()
                     self.unsub = True
 
-                _LOGGER.info("Start listener task...")
-                task = asyncio.create_task(listen())
-                while self.unsub == False:
-                    # Get Device information every 360 seconds
-                    _LOGGER.debug("Wait 360 seconds in main thread...")
-                    await asyncio.sleep(360)
+                _LOGGER.info("Refresh realtime...")
+                await gruenbeck.refresh_sd()
+                _LOGGER.info("Enter realtime...")
+                await gruenbeck.enter_sd()
 
-                    await gruenbeck.get_device_infos()
-                    device = await gruenbeck.get_device_infos_parameters()
-                    _LOGGER.debug(f"Device after update: {device}")
-                    await gruenbeck.enter_sd()
-                    await gruenbeck.refresh_sd()
+                while self.unsub == False:
+                    await gruenbeck.update_sd()
+
+                    _LOGGER.debug(await gruenbeck.get_device_salt_measurements())
+
+                    _LOGGER.debug("Wait 60 seconds in main thread...")
+                    await asyncio.sleep(60)
+
+                #_LOGGER.info("Start listener task...")
+                #task = asyncio.create_task(listen())
+                #while self.unsub == False:
+                #    # Get Device information every 360 seconds
+                #    _LOGGER.debug("Wait 360 seconds in main thread...")
+                #    await asyncio.sleep(60)##
+
+                #    await gruenbeck.get_device_infos()
+                #    device = await gruenbeck.get_device_infos_parameters()
+                #    _LOGGER.debug(f"Device after update: {device}")
+                #    await gruenbeck.enter_sd()
+                #    await gruenbeck.refresh_sd()
 
         except PyGruenbeckCloudConnectionError as ex:
             _LOGGER.error(ex)
         except (asyncio.exceptions.CancelledError, KeyboardInterrupt):
-            _LOGGER.debug("Got finish signal, wait for disconnect...")
-            await gruenbeck.disconnect()
-            _LOGGER.info("Stopping Task")
-            task.cancel()
+            #await gruenbeck.disconnect()
+            #_LOGGER.info("Stopping Task")
+            #task.cancel()
             _LOGGER.info("Quitting!")
+        finally:
+            _LOGGER.debug("Got finish signal, wait for disconnect...")
+            await gruenbeck.leave_sd()
+            await gruenbeck.off_sd()
 
 
 asyncio.run(TestGruenbeck().init())

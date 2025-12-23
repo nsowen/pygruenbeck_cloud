@@ -866,6 +866,93 @@ class PyGruenbeckCloud:
         if isinstance(response, dict):
             self.device.update_from_http_response(data=response)
 
+    async def update_sd(self) -> None:
+        """Send refresh SD """
+        if self.device is None:
+            msg = "You need to select an device first"
+            raise PyGruenbeckCloudError(msg)
+
+        device = self.device
+
+        token = await self._get_web_access_token()
+
+        scheme = WEB_REQUESTS["update_sd"]["scheme"]
+        host = WEB_REQUESTS["update_sd"]["host"]
+        port = WEB_REQUESTS["update_sd"]["port"]
+        use_cookies = WEB_REQUESTS["update_sd"]["use_cookies"]
+
+        headers = self._placeholder_to_values_dict(
+            WEB_REQUESTS["update_sd"]["headers"],
+            {
+                PARAM_NAME_ACCESS_TOKEN: token,
+            },
+        )
+        path = self._placeholder_to_values_str(
+            WEB_REQUESTS["update_sd"]["path"],
+            {PARAM_NAME_DEVICE_ID: device.id},
+        )
+        method = WEB_REQUESTS["update_sd"]["method"]
+        data = WEB_REQUESTS["update_sd"]["data"]
+        query = WEB_REQUESTS["update_sd"]["query_params"]
+
+        url = URL.build(scheme=scheme, host=host, port=port, path=path, query=query)
+        response = await self._http_request(
+            url=url,
+            headers=headers,
+            method=method,
+            data=data,
+            expected_status_codes=[
+                aiohttp.http.HTTPStatus.ACCEPTED,
+                aiohttp.http.HTTPStatus.OK,
+            ],
+            use_cookies=use_cookies,
+        )
+
+        if isinstance(response, dict):
+            self.device.update_from_http_response(data=response)
+
+    async def off_sd(self) -> None:
+        """Send off SD for WS."""
+        if self.device is None:
+            msg = "You need to select an device first"
+            raise PyGruenbeckCloudError(msg)
+
+        device = self.device
+
+        token = await self._get_web_access_token()
+
+        scheme = WEB_REQUESTS["off_sd"]["scheme"]
+        host = WEB_REQUESTS["off_sd"]["host"]
+        port = WEB_REQUESTS["off_sd"]["port"]
+        use_cookies = WEB_REQUESTS["off_sd"]["use_cookies"]
+
+        headers = self._placeholder_to_values_dict(
+            WEB_REQUESTS["off_sd"]["headers"],
+            {
+                PARAM_NAME_ACCESS_TOKEN: token,
+            },
+        )
+        path = self._placeholder_to_values_str(
+            WEB_REQUESTS["off_sd"]["path"],
+            {PARAM_NAME_DEVICE_ID: device.id},
+        )
+        method = WEB_REQUESTS["off_sd"]["method"]
+        data = WEB_REQUESTS["off_sd"]["data"]
+        query = WEB_REQUESTS["off_sd"]["query_params"]
+
+        url = URL.build(scheme=scheme, host=host, port=port, path=path, query=query)
+        await self._http_request(
+            url=url,
+            headers=headers,
+            method=method,
+            data=data,
+            expected_status_codes=[
+                aiohttp.http.HTTPStatus.ACCEPTED,
+                aiohttp.http.HTTPStatus.OK,
+            ],
+            use_cookies=use_cookies,
+        )
+
     async def leave_sd(self) -> None:
         """Send leave SD for WS."""
         if self.device is None:
@@ -908,6 +995,7 @@ class PyGruenbeckCloud:
             ],
             use_cookies=use_cookies,
         )
+
 
     async def _http_request(
         self,
