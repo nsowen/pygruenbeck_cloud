@@ -866,8 +866,8 @@ class PyGruenbeckCloud:
         if isinstance(response, dict):
             self.device.update_from_http_response(data=response)
 
-    async def update_sd(self) -> None:
-        """Send refresh SD """
+    async def update_sd(self) -> Device:
+        """Send update SD """
         if self.device is None:
             msg = "You need to select an device first"
             raise PyGruenbeckCloudError(msg)
@@ -910,6 +910,8 @@ class PyGruenbeckCloud:
 
         if isinstance(response, dict):
             self.device.update_from_http_response(data=response)
+
+        return self.device
 
     async def off_sd(self) -> None:
         """Send off SD for WS."""
