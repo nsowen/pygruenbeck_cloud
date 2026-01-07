@@ -40,6 +40,9 @@ class TestGruenbeck:
                 # Use first Device
                 await gruenbeck.set_device(devices[0])
 
+                await gruenbeck.off_sd()
+                await gruenbeck.leave_sd()
+
                 # Update parameter values for Device
                 async def update_parameter_value(parameter_name: str, new_value: Any):
                     # Get Params
@@ -87,18 +90,28 @@ class TestGruenbeck:
                     await gruenbeck.disconnect()
                     self.unsub = True
 
+                _LOGGER.info("Get parameters...")
+                await gruenbeck.get_device_infos_parameters()
+                await asyncio.sleep(0.5)
                 _LOGGER.info("Refresh realtime...")
                 await gruenbeck.refresh_sd()
+                await asyncio.sleep(0.5)
                 _LOGGER.info("Enter realtime...")
                 await gruenbeck.enter_sd()
+                await asyncio.sleep(0.5)
 
-                while self.unsub == False:
+                count = 0
+
+                while count < 100:
                     await gruenbeck.update_sd()
+                    #_LOGGER.debug(f"Device after update: {device.realtime.to_dict()}")
+                    #_LOGGER.debug(await gruenbeck.get_device_salt_measurements())
+                    #_LOGGER.debug("Wait 60 seconds in main thread...")
+                    await asyncio.sleep(1)
+                    count += 1
 
-                    _LOGGER.debug(await gruenbeck.get_device_salt_measurements())
-
-                    _LOGGER.debug("Wait 60 seconds in main thread...")
-                    await asyncio.sleep(60)
+                await gruenbeck.off_sd()
+                await gruenbeck.leave_sd()
 
                 #_LOGGER.info("Start listener task...")
                 #task = asyncio.create_task(listen())
@@ -122,8 +135,8 @@ class TestGruenbeck:
             _LOGGER.info("Quitting!")
         finally:
             _LOGGER.debug("Got finish signal, wait for disconnect...")
-            await gruenbeck.leave_sd()
             await gruenbeck.off_sd()
+            await gruenbeck.leave_sd()
 
 
 asyncio.run(TestGruenbeck().init())

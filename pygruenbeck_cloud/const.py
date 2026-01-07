@@ -8,9 +8,9 @@ import aiohttp
 from yarl._url import DEFAULT_PORTS
 
 # User Agent configuration
-USER_AGENT_APP: Final = "Gruenbeck/354 CFNetwork/1209 Darwin/20.2.0"
+USER_AGENT_APP: Final = "App%20production/473 CFNetwork/3860.300.31 Darwin/25.2.0"
 USER_AGENT_WS: Final = (
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X)"
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X)"
     " AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
 )
 
@@ -339,7 +339,7 @@ WEB_REQUESTS: dict[str, dict[str, Any]] = {
             "Host": "prod-eu-gruenbeck-api.azurewebsites.net",
             "Accept": "application/json, text/plain, */*",
             "User-Agent": USER_AGENT_APP,
-            "Accept-Language": "de-de",
+            "Accept-Language": "en-DE,en;q=0.5",
             "Authorization": f"Bearer {{{PARAM_NAME_ACCESS_TOKEN}}}",
         },
     },
@@ -359,7 +359,7 @@ WEB_REQUESTS: dict[str, dict[str, Any]] = {
             "Host": "prod-eu-gruenbeck-api.azurewebsites.net",
             "Accept": "application/json, text/plain, */*",
             "User-Agent": USER_AGENT_APP,
-            "Accept-Language": "de-de",
+            "Accept-Language": "en-DE,en;q=0.5",
             "Authorization": f"Bearer {{{PARAM_NAME_ACCESS_TOKEN}}}",
         },
     },
@@ -378,8 +378,8 @@ WEB_REQUESTS: dict[str, dict[str, Any]] = {
         "headers": {
             "Host": "prod-eu-gruenbeck-api.azurewebsites.net",
             "Accept": "application/json, text/plain, */*",
-            "User-Agent": USER_AGENT_APP,
-            "Accept-Language": "de-de",
+            "User-Agent": USER_AGENT_WS,
+            "Accept-Language": "de-DE,de;q=0.9",
             "Authorization": f"Bearer {{{PARAM_NAME_ACCESS_TOKEN}}}",
         },
     },
