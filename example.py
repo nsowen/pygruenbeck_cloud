@@ -27,8 +27,8 @@ class TestGruenbeck:
         """Demo function for testing."""
         try:
             async with PyGruenbeckCloud(
-                username="nils@sowen.de",
-                password="",
+                username="xxx",
+                password="yyy",
             ) as gruenbeck:
                 gruenbeck.logger = _LOGGER
 
