@@ -28,7 +28,7 @@ class TestGruenbeck:
         try:
             async with PyGruenbeckCloud(
                 username="nils@sowen.de",
-                password="3tT8*WpHqAhXGuY-",
+                password="",
             ) as gruenbeck:
                 gruenbeck.logger = _LOGGER
 
