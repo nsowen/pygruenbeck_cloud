@@ -939,3 +939,141 @@ async def test_get_device_infos_se_parameters(
         "Incorrect parsing of illuminated LED ring mode",
         next(iter(PARAMETER_LED_MODES)),
     )
+
+
+@patch("pygruenbeck_cloud.const.WEB_REQUESTS")
+@pytest.mark.asyncio
+async def test_poll_sd_se(
+    mock_request,
+    aiohttp_server: any,
+    fake_api: FakeApi,
+):
+    """Test poll_sd performs the full per-poll cycle for SE devices.
+
+    Verifies that poll_sd calls refresh → enter → update → leave → off in
+    sequence, and that the returned device contains updated realtime data.
+    """
+    username = "fake@mail.com"
+    password = "fakepassword"
+
+    fake_device = fake_api.fake_device("SE")
+    empty_response = "{}"
+    refresh_response = fake_api.refresh_sd_se_response()
+    update_response = fake_api.update_sd_se_response()
+
+    call_log: list[str] = []
+
+    async def handler_refresh(request: web.Request) -> web.Response:
+        call_log.append("refresh")
+        return web.Response(
+            body=refresh_response,
+            headers=fake_api.refresh_sd_se_response_headers(),
+            status=200,
+        )
+
+    async def handler_enter(request: web.Request) -> web.Response:
+        call_log.append("enter")
+        return web.Response(
+            body=empty_response,
+            headers=fake_api.sd_empty_response_headers(),
+            status=200,
+        )
+
+    async def handler_update(request: web.Request) -> web.Response:
+        call_log.append("update")
+        return web.Response(
+            body=update_response,
+            headers=fake_api.update_sd_se_response_headers(),
+            status=200,
+        )
+
+    async def handler_leave(request: web.Request) -> web.Response:
+        call_log.append("leave")
+        return web.Response(
+            body=empty_response,
+            headers=fake_api.sd_empty_response_headers(),
+            status=200,
+        )
+
+    async def handler_off(request: web.Request) -> web.Response:
+        call_log.append("off")
+        return web.Response(
+            body=empty_response,
+            headers=fake_api.sd_empty_response_headers(),
+            status=200,
+        )
+
+    app = web.Application()
+    app.add_routes(
+        [
+            web.post(
+                PyGruenbeckCloud._placeholder_to_values_str(
+                    WEB_REQUESTS["refresh_sd"]["path"],
+                    {PARAM_NAME_DEVICE_ID: fake_device.id},
+                ),
+                handler_refresh,
+            ),
+            web.post(
+                PyGruenbeckCloud._placeholder_to_values_str(
+                    WEB_REQUESTS["enter_sd"]["path"],
+                    {PARAM_NAME_DEVICE_ID: fake_device.id},
+                ),
+                handler_enter,
+            ),
+            web.get(
+                PyGruenbeckCloud._placeholder_to_values_str(
+                    WEB_REQUESTS["update_sd"]["path"],
+                    {PARAM_NAME_DEVICE_ID: fake_device.id},
+                ),
+                handler_update,
+            ),
+            web.post(
+                PyGruenbeckCloud._placeholder_to_values_str(
+                    WEB_REQUESTS["leave_sd"]["path"],
+                    {PARAM_NAME_DEVICE_ID: fake_device.id},
+                ),
+                handler_leave,
+            ),
+            web.post(
+                PyGruenbeckCloud._placeholder_to_values_str(
+                    WEB_REQUESTS["off_sd"]["path"],
+                    {PARAM_NAME_DEVICE_ID: fake_device.id},
+                ),
+                handler_off,
+            ),
+        ]
+    )
+
+    server = await aiohttp_server(app)
+
+    return_value = WEB_REQUESTS
+    for key in ("refresh_sd", "enter_sd", "update_sd", "leave_sd", "off_sd"):
+        return_value[key]["scheme"] = "http"
+        return_value[key]["host"] = f"{server.host}"
+        return_value[key]["port"] = int(f"{server.port}")
+    mock_request.return_value = return_value
+
+    gruenbeck = PyGruenbeckCloud(username=username, password=password)
+    gruenbeck._auth_token = GruenbeckAuthToken(
+        access_token="access_token",
+        refresh_token="refresh_token",
+        not_before=datetime.datetime.now(),
+        expires_on=(datetime.datetime.now() + datetime.timedelta(hours=5)),
+        expires_in=(5 * 60 * 60),
+        tenant="tenant",
+    )
+    gruenbeck._device = fake_device
+    gruenbeck._device.logger = gruenbeck.logger
+
+    device = await gruenbeck.poll_sd()
+
+    assert call_log == [
+        "refresh",
+        "enter",
+        "update",
+        "leave",
+        "off",
+    ], f"Expected full poll cycle, got: {call_log}"
+
+    assert device is not None, "poll_sd should return the device"
+    assert device.realtime.current_flow_rate is not None, "flow_rate should be populated"

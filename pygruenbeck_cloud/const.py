@@ -419,7 +419,7 @@ WEB_REQUESTS: dict[str, dict[str, Any]] = {
             "Host": "prod-eu-gruenbeck-api.azurewebsites.net",
             "Accept": "application/json, text/plain, */*",
             "User-Agent": USER_AGENT_APP,
-            "Accept-Language": "de-de",
+            "Accept-Language": "en-DE,en;q=0.5",
             "Authorization": f"Bearer {{{PARAM_NAME_ACCESS_TOKEN}}}",
         },
     },

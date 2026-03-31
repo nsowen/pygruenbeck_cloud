@@ -913,6 +913,29 @@ class PyGruenbeckCloud:
 
         return self.device
 
+    async def poll_sd(self) -> Device:
+        """Poll SE-series device for current realtime data.
+
+        Performs the full per-poll realtime cycle:
+        refresh → enter → update → leave → off.
+
+        This is the correct method for SE-series polling. Do NOT call
+        enter_sd() once and loop update_sd() — the server silently drops
+        the realtime session after ~10-15 minutes, causing updates to stall.
+        Each call to poll_sd() is stateless and self-contained.
+        """
+        if self.device is None:
+            msg = "You need to select an device first"
+            raise PyGruenbeckCloudError(msg)
+
+        await self.refresh_sd()
+        await self.enter_sd()
+        device = await self.update_sd()
+        await self.leave_sd()
+        await self.off_sd()
+
+        return device
+
     async def off_sd(self) -> None:
         """Send off SD for WS."""
         if self.device is None:

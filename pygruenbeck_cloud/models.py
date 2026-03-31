@@ -1261,7 +1261,6 @@ class Device:
     def update_from_ws_response(self, data: dict[str, Any]) -> "Device":
         """Update object with data from WS API response."""
         # If we got PING, do nothing
-        self.logger.debug("Data: %s", data)
         if data.get("type") == API_WS_RESPONSE_TYPE_PING:
             return self
 

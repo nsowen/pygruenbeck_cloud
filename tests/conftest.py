@@ -317,6 +317,63 @@ class FakeApi:
             ]
         )
 
+    def sd_empty_response_headers(self) -> CIMultiDict:
+        """Fixture for empty SD endpoint response headers (enter/leave/off)."""
+        return CIMultiDict(
+            [
+                ("Content-Type", "application/json; charset=utf-8"),
+                ("Strict-Transport-Security", "max-age=31536000; includeSubDomains"),
+                (
+                    "Request-Context",
+                    "appId=cid-v1:9bf1e130-ec63-42ac-b6a7-7ce1131e9176",
+                ),
+            ]
+        )
+
+    def refresh_sd_se_response(self) -> str:
+        """Fixture for refresh_sd SE response."""
+        with open(
+            f"{DIR_NAME}/responses/refresh_sd_SE.txt", encoding="utf-8"
+        ) as file:
+            data = file.read()
+
+        return data
+
+    def refresh_sd_se_response_headers(self) -> CIMultiDict:
+        """Fixture for refresh_sd SE response headers."""
+        return CIMultiDict(
+            [
+                ("Content-Type", "application/json; charset=utf-8"),
+                ("Strict-Transport-Security", "max-age=31536000; includeSubDomains"),
+                (
+                    "Request-Context",
+                    "appId=cid-v1:9bf1e130-ec63-42ac-b6a7-7ce1131e9176",
+                ),
+            ]
+        )
+
+    def update_sd_se_response(self) -> str:
+        """Fixture for update_sd SE response."""
+        with open(
+            f"{DIR_NAME}/responses/update_sd_SE.txt", encoding="utf-8"
+        ) as file:
+            data = file.read()
+
+        return data
+
+    def update_sd_se_response_headers(self) -> CIMultiDict:
+        """Fixture for update_sd SE response headers."""
+        return CIMultiDict(
+            [
+                ("Content-Type", "application/json; charset=utf-8"),
+                ("Strict-Transport-Security", "max-age=31536000; includeSubDomains"),
+                (
+                    "Request-Context",
+                    "appId=cid-v1:9bf1e130-ec63-42ac-b6a7-7ce1131e9176",
+                ),
+            ]
+        )
+
     def fake_device(self, series: str = "SD") -> Device:
         """Fixture returning fake Device object."""
         devices = {
