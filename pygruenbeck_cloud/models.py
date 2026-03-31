@@ -1039,16 +1039,16 @@ class DeviceRealtimeInfo:
         default=None,
         metadata=json_config(field_name="mendreg2"),
     )
-    # # [%]?
-    # percentage: int | None = field(
-    #     default=None,
-    #     metadata=json_config(field_name="mregpercent1"),
-    # )
-    # # 2 [%]?
-    # percentage_2: int | None = field(
-    #     default=None,
-    #     metadata=json_config(field_name="mregpercent2"),
-    # )
+    # Regeneration progress exchanger 1 [%]
+    regeneration_progress_1: int | None = field(
+        default=None,
+        metadata=json_config(field_name="mregpercent1"),
+    )
+    # Regeneration progress exchanger 2 [%]
+    regeneration_progress_2: int | None = field(
+        default=None,
+        metadata=json_config(field_name="mregpercent2"),
+    )
     # Regeneration flow rate Exchanger 1 [l/h] - int?
     regeneration_flow_rate_exchanger: int | None = field(
         default=None,
@@ -1083,6 +1083,36 @@ class DeviceRealtimeInfo:
     remaining_amount_of_water: float | None = field(
         default=None,
         metadata=json_config(field_name="mreswatadmod"),
+    )
+    # Lime scale indicator [%] - SE only
+    lime_scale_indicator: int | None = field(
+        default=None,
+        metadata=json_config(field_name="mlime"),
+    )
+    # Days until next inspection - SE only
+    days_until_inspection: int | None = field(
+        default=None,
+        metadata=json_config(field_name="minspect"),
+    )
+    # Regeneration counter since last service - SE only
+    regeneration_counter_service: int | None = field(
+        default=None,
+        metadata=json_config(field_name="mcountregservice"),
+    )
+    # Today's water usage [l] - SE only
+    water_usage_today: int | None = field(
+        default=None,
+        metadata=json_config(field_name="hwaterusage0"),
+    )
+    # Today's salt usage [kg] - SE only
+    salt_usage_today: float | None = field(
+        default=None,
+        metadata=json_config(field_name="hsaltusage0"),
+    )
+    # Today's lime value - SE only
+    lime_today: int | None = field(
+        default=None,
+        metadata=json_config(field_name="hlime0"),
     )
 
 
