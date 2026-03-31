@@ -374,6 +374,7 @@ class FakeApi:
             ]
         )
 
+
     def fake_device(self, series: str = "SD") -> Device:
         """Fixture returning fake Device object."""
         devices = {
